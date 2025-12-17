@@ -1,6 +1,7 @@
 from ..config.db import db
 from ..config.bcyptConfig import bcrypt
 from datetime import datetime
+from ..models.tables.usuario_posts_curtidos import usuarios_posts_curtidos
 
 class Usuario(db.Model):
     __tablename__ = "usuarios"
@@ -14,6 +15,7 @@ class Usuario(db.Model):
     data_registro = db.Column(db.DateTime, nullable=False, default=datetime.now())
     bio = db.Column(db.String(600), nullable=True)
     posts = db.relationship('Post', backref='autor', cascade='all, delete', lazy='select')
+    posts_curtidos = db.relationship('Post', lazy="select", overlaps="autor,posts", secondary=usuarios_posts_curtidos)
 
     def __init__(self, data):
         self.nome = data.get("nome")

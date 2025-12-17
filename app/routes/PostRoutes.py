@@ -40,3 +40,8 @@ def deletar_post(id):
 def editar_post(id):
     return PostService.editar_post(id, request.get_json())
 
+@postBP.route("/avaliar/<int:post_id>/<int:user_id>", methods=["PATCH"])
+@jwt_required()
+def avaliar_post(post_id, user_id):
+    return PostService.avaliar_post(post_id, user_id)
+

@@ -1,7 +1,7 @@
 import io
 from ..models import Post, Imagem
 from flask import jsonify, send_file
-from ..repositories import PostRepository, HashtagRepository
+from ..repositories import PostRepository, HashtagRepository, Usuario_PostsCurtidosRepository
 from ..utils import *
 from ..config.db import db
 
@@ -121,3 +121,24 @@ def buscar_id_imagem(id):
         io.BytesIO(imagem.imagem),
         mimetype="image/jpeg"
     )
+
+def avaliar_post(post_id, user_id):
+    usuario = UsuarioRepository.find_by_id(user_id)
+
+    post = PostRepository.find_by_id(post_id)
+    posts_curtidos = Usuario_PostsCurtidosRepository.find_liked_posts_by_user_id(user_id)
+    
+    if (post in usuario.posts_curtidos):
+      post.curtidas -= 1; 
+      PostRepository.save(post)
+      usuario.posts_curtidos.remove(post)
+      UsuarioRepository.save(usuario)
+
+      return("Post descurtido com sucesso!")
+    
+    post.curtidas += 1 
+    PostRepository.save(post)
+
+    usuario.posts_curtidos.append(post)
+    UsuarioRepository.save(usuario)
+    return ("Post curtido com sucesso!")
